@@ -375,7 +375,7 @@ export default function QuoteForm() {
         </div>
       )}
 
-      {/* SUBMIT BUTTON */}
+      {/* SUBMITTING BUTTON */}
       <button
         type="submit"
         disabled={
