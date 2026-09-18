@@ -9,7 +9,7 @@ export default function Home() {
       <nav className="fixed left-0 right-0 top-0 z-50 border-b border-black/5 bg-white/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
           <a href="#" className="text-xl font-black tracking-tight">
-            HARBOUR <span className="text-red-600">VINYL CO.</span>
+            HARBOUR <span className="text-red-600">VINYL </span>
           </a>
 
           <div className="hidden items-center gap-8 text-sm font-semibold md:flex">
@@ -92,10 +92,6 @@ export default function Home() {
 
                 <p className="mt-1 text-5xl font-black text-red-600 sm:text-6xl">
                   VINYL
-                </p>
-
-                <p className="mt-3 text-sm font-black tracking-[0.4em] text-zinc-500">
-                  CO.
                 </p>
 
               </div>
@@ -219,7 +215,7 @@ export default function Home() {
           <div className="group relative overflow-hidden rounded-3xl md:row-span-2">
             <Image
               src="/gallery/img1.jpg"
-              alt="Custom vinyl decal by Harbour Vinyl Co."
+              alt="Custom vinyl decal by Harbour Vinyl "
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -229,7 +225,7 @@ export default function Home() {
 
             <div className="absolute bottom-0 p-6 text-white">
               <p className="text-sm font-semibold uppercase tracking-wider text-red-400">
-                Harbour Vinyl Co.
+                Harbour Vinyl 
               </p>
 
               <p className="mt-1 text-xl font-bold">
@@ -242,7 +238,7 @@ export default function Home() {
           <div className="group relative overflow-hidden rounded-3xl">
             <Image
               src="/gallery/img2.jpg"
-              alt="Custom vinyl design by Harbour Vinyl Co."
+              alt="Custom vinyl design by Harbour Vinyl"
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -253,7 +249,7 @@ export default function Home() {
           <div className="group relative overflow-hidden rounded-3xl">
             <Image
               src="/gallery/img3.jpg"
-              alt="Custom decal project by Harbour Vinyl Co."
+              alt="Custom decal project by Harbour Vinyl "
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -264,7 +260,7 @@ export default function Home() {
           <div className="group relative overflow-hidden rounded-3xl">
             <Image
               src="/gallery/img4.jpg"
-              alt="Custom vinyl graphic by Harbour Vinyl Co."
+              alt="Custom vinyl graphic by Harbour Vinyl "
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -275,7 +271,7 @@ export default function Home() {
           <div className="group relative overflow-hidden rounded-3xl">
             <Image
               src="/gallery/img5.jpg"
-              alt="Custom vinyl decal made by Harbour Vinyl Co."
+              alt="Custom vinyl decal made by Harbour Vinyl "
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -480,7 +476,7 @@ export default function Home() {
             <p className="text-lg font-black tracking-tight text-zinc-900">
               HARBOUR{" "}
               <span className="text-red-600">
-                VINYL CO.
+                VINYL 
               </span>
             </p>
 
@@ -495,7 +491,7 @@ export default function Home() {
             </p>
 
             <p className="mt-2">
-              © 2026 Harbour Vinyl Co. All rights reserved.
+              © 2026 Harbour Vinyl All rights reserved.
             </p>
           </div>
 

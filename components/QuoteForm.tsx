@@ -5,43 +5,79 @@ import { FormEvent, useState } from "react";
 type Status = "idle" | "sending" | "success" | "error";
 
 export default function QuoteForm() {
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+
   const [lengthError, setLengthError] = useState("");
   const [widthError, setWidthError] = useState("");
+  const [sizeError, setSizeError] = useState("");
+
   const [submitError, setSubmitError] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
-  function validateLength(value: string) {
-    if (!value) {
-      setLengthError("");
+  function sanitizeDimension(value: string) {
+    // Allow only numbers and one decimal point
+    let cleaned = value.replace(/[^0-9.]/g, "");
+
+    const parts = cleaned.split(".");
+
+    if (parts.length > 2) {
+      cleaned = `${parts[0]}.${parts.slice(1).join("")}`;
+    }
+
+    return cleaned;
+  }
+
+  function validateDimensions(
+    lengthValue: string,
+    widthValue: string
+  ) {
+    setLengthError("");
+    setWidthError("");
+    setSizeError("");
+
+    if (!lengthValue || !widthValue) {
       return;
     }
 
-    const number = Number(value);
+    const lengthNumber = Number(lengthValue);
+    const widthNumber = Number(widthValue);
 
-    if (number <= 0) {
+    if (Number.isNaN(lengthNumber) || lengthNumber <= 0) {
       setLengthError("Please enter a valid length.");
-    } else if (number > 24) {
-      setLengthError("Maximum length is 24 inches.");
-    } else {
-      setLengthError("");
+      return;
+    }
+
+    if (Number.isNaN(widthNumber) || widthNumber <= 0) {
+      setWidthError("Please enter a valid width.");
+      return;
+    }
+
+    const fitsNormalOrientation =
+      lengthNumber <= 24 && widthNumber <= 12;
+
+    const fitsRotatedOrientation =
+      lengthNumber <= 12 && widthNumber <= 24;
+
+    if (!fitsNormalOrientation && !fitsRotatedOrientation) {
+      setSizeError(
+        "Maximum decal size is 24 × 12 inches. You can enter the dimensions in either orientation."
+      );
     }
   }
 
-  function validateWidth(value: string) {
-    if (!value) {
-      setWidthError("");
-      return;
-    }
+  function handleLengthChange(value: string) {
+    const cleaned = sanitizeDimension(value);
 
-    const number = Number(value);
+    setLength(cleaned);
+    validateDimensions(cleaned, width);
+  }
 
-    if (number <= 0) {
-      setWidthError("Please enter a valid width.");
-    } else if (number > 12) {
-      setWidthError("Maximum width is 12 inches.");
-    } else {
-      setWidthError("");
-    }
+  function handleWidthChange(value: string) {
+    const cleaned = sanitizeDimension(value);
+
+    setWidth(cleaned);
+    validateDimensions(length, cleaned);
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -50,36 +86,49 @@ export default function QuoteForm() {
     const formElement = e.currentTarget;
     const formData = new FormData(formElement);
 
-    const length = Number(formData.get("length"));
-    const width = Number(formData.get("width"));
+    const lengthNumber = Number(length);
+    const widthNumber = Number(width);
 
     let invalid = false;
 
     setSubmitError("");
+    setLengthError("");
+    setWidthError("");
+    setSizeError("");
 
-    if (!length || length <= 0) {
+    if (!length || Number.isNaN(lengthNumber) || lengthNumber <= 0) {
       setLengthError("Please enter a valid length.");
       invalid = true;
-    } else if (length > 24) {
-      setLengthError("Maximum length is 24 inches.");
-      invalid = true;
-    } else {
-      setLengthError("");
     }
 
-    if (!width || width <= 0) {
+    if (!width || Number.isNaN(widthNumber) || widthNumber <= 0) {
       setWidthError("Please enter a valid width.");
       invalid = true;
-    } else if (width > 12) {
-      setWidthError("Maximum width is 12 inches.");
-      invalid = true;
-    } else {
-      setWidthError("");
+    }
+
+    if (!invalid) {
+      const fitsNormalOrientation =
+        lengthNumber <= 24 && widthNumber <= 12;
+
+      const fitsRotatedOrientation =
+        lengthNumber <= 12 && widthNumber <= 24;
+
+      if (!fitsNormalOrientation && !fitsRotatedOrientation) {
+        setSizeError(
+          "Maximum decal size is 24 × 12 inches. You can enter the dimensions in either orientation."
+        );
+
+        invalid = true;
+      }
     }
 
     if (invalid) {
       return;
     }
+
+    // Since the inputs are controlled, explicitly put them in FormData
+    formData.set("length", length);
+    formData.set("width", width);
 
     try {
       setStatus("sending");
@@ -93,11 +142,15 @@ export default function QuoteForm() {
 
       if (!response.ok) {
         throw new Error(
-          result.error || "Something went wrong while sending your request."
+          result.error ||
+            "Something went wrong while sending your request."
         );
       }
 
       formElement.reset();
+
+      setLength("");
+      setWidth("");
       setStatus("success");
     } catch (error) {
       console.error(error);
@@ -136,6 +189,9 @@ export default function QuoteForm() {
             setSubmitError("");
             setLengthError("");
             setWidthError("");
+            setSizeError("");
+            setLength("");
+            setWidth("");
           }}
           className="mt-8 rounded-full bg-black px-6 py-3 font-bold text-white transition hover:bg-zinc-800"
         >
@@ -216,17 +272,13 @@ export default function QuoteForm() {
             Select an option
           </option>
 
-          <option value="Vehicle Decal">
-            Vehicle Decal
-          </option>
+          <option value="Vehicle Decal">Vehicle Decal</option>
 
           <option value="Business / Logo Decal">
             Business / Logo Decal
           </option>
 
-          <option value="Window Decal">
-            Window Decal
-          </option>
+          <option value="Window Decal">Window Decal</option>
 
           <option value="Laptop / Personal Decal">
             Laptop / Personal Decal
@@ -245,11 +297,11 @@ export default function QuoteForm() {
         </label>
 
         <p className="mt-1 text-xs text-zinc-500">
-          Enter the dimensions in inches.
+          Enter the dimensions in inches. Maximum size is 24 × 12
+          inches.
         </p>
 
         <div className="mt-3 grid grid-cols-2 gap-4">
-
           {/* LENGTH */}
           <div>
             <label
@@ -263,14 +315,16 @@ export default function QuoteForm() {
               <input
                 id="length"
                 name="length"
-                type="number"
-                min="0.5"
-                step="0.5"
+                type="text"
+                inputMode="decimal"
                 required
                 placeholder="24"
-                onChange={(e) => validateLength(e.target.value)}
+                value={length}
+                onChange={(e) =>
+                  handleLengthChange(e.target.value)
+                }
                 className={`w-full rounded-xl border bg-zinc-50 px-4 py-3.5 pr-14 outline-none transition focus:ring-2 ${
-                  lengthError
+                  lengthError || sizeError
                     ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                     : "border-zinc-200 focus:border-red-500 focus:ring-red-100"
                 }`}
@@ -301,14 +355,16 @@ export default function QuoteForm() {
               <input
                 id="width"
                 name="width"
-                type="number"
-                min="0.5"
-                step="0.5"
+                type="text"
+                inputMode="decimal"
                 required
                 placeholder="12"
-                onChange={(e) => validateWidth(e.target.value)}
+                value={width}
+                onChange={(e) =>
+                  handleWidthChange(e.target.value)
+                }
                 className={`w-full rounded-xl border bg-zinc-50 px-4 py-3.5 pr-14 outline-none transition focus:ring-2 ${
-                  widthError
+                  widthError || sizeError
                     ? "border-red-500 focus:border-red-500 focus:ring-red-100"
                     : "border-zinc-200 focus:border-red-500 focus:ring-red-100"
                 }`}
@@ -326,6 +382,14 @@ export default function QuoteForm() {
             )}
           </div>
         </div>
+
+        {sizeError && (
+          <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3">
+            <p className="text-sm font-semibold text-red-700">
+              {sizeError}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* QUANTITY */}
@@ -381,7 +445,8 @@ export default function QuoteForm() {
         disabled={
           status === "sending" ||
           Boolean(lengthError) ||
-          Boolean(widthError)
+          Boolean(widthError) ||
+          Boolean(sizeError)
         }
         className="mt-8 w-full rounded-full bg-red-600 px-7 py-4 font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-400"
       >
